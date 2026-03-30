@@ -1,0 +1,300 @@
+/* ============================================================
+   form.css
+   Responsável pelos estilos de:
+     - Variáveis globais de cor e tipografia (:root)
+     - Fundo e layout base do site
+     - Cabeçalho (site-header)
+     - Cards do formulário (rpg-card)
+     - Inputs, selects, textareas (override Bootstrap dark)
+     - Cards de perfil (Guerreiro / Especialista / Místico)
+     - Pills de distribuição de atributo
+     - Dropzone de avatar
+     - Botão de geração
+     - Tela de carregamento
+     - Barra de exportação
+   ============================================================ */
+
+/* ── Variáveis globais ─────────────────────────────────── */
+:root {
+  --bg:        #090c12;   /* fundo principal da página     */
+  --bg2:       #10141e;   /* fundo de cards                */
+  --bg3:       #171c29;   /* fundo de inputs / sub-cards   */
+  --bg4:       #1e2436;   /* camadas mais claras internas  */
+
+  --border:    #252d42;   /* borda padrão                  */
+  --border2:   #35405a;   /* borda de destaque leve        */
+
+  --gold:      #c9a84c;   /* dourado escuro (bordas)       */
+  --gold2:     #e8c96d;   /* dourado médio (textos)        */
+  --gold3:     #f5e0a0;   /* dourado claro (destaques)     */
+
+  --red:       #c0392b;
+  --red2:      #e74c3c;
+
+  --blue:      #2980b9;
+  --blue2:     #3498db;
+
+  --purple:    #8e44ad;
+  --purple2:   #9b59b6;
+
+  --green:     #27ae60;
+  --neon:      #00ff41;   /* verde neon: PV e level badge  */
+
+  --text:      #d4c9b0;   /* texto principal               */
+  --text2:     #7a7264;   /* texto secundário / muted      */
+  --text3:     #c4b896;   /* texto intermediário           */
+}
+
+/* ── Reset mínimo ────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Rajdhani', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Fundo decorativo fixo (não intercepta cliques) ──────── */
+.bg-deco {
+  position: fixed; inset: 0;
+  pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(ellipse at 15% 60%, rgba(201,168,76,0.05) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 15%, rgba(142,68,173,0.06) 0%, transparent 50%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z' fill='none' stroke='%23ffffff05' stroke-width='0.5'/%3E%3C/svg%3E");
+}
+
+/* Wrapper de conteúdo acima do fundo */
+.app-wrap { position: relative; z-index: 1; }
+
+/* ── Cabeçalho ───────────────────────────────────────────── */
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 0 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.logo-ornament {
+  display: flex; align-items: center;
+  justify-content: center; gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+.logo-line   { flex: 1; max-width: 130px; height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.logo-diamond { width: 9px; height: 9px; background: var(--gold); transform: rotate(45deg); flex-shrink: 0; }
+.site-title  { font-family: 'Cinzel', serif; font-size: 2.3rem; font-weight: 700; color: var(--gold2); letter-spacing: 0.1em; text-shadow: 0 0 40px rgba(201,168,76,0.25); margin: 0; }
+.site-sub    { font-family: 'Crimson Text', serif; font-style: italic; color: var(--text2); font-size: 1.05rem; margin-top: 0.3rem; }
+
+/* ── Card / painel do formulário ─────────────────────────── */
+.rpg-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.rpg-card-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  color: var(--gold);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 0.6rem;
+}
+/* Ícone diamante antes do título do card */
+.rpg-card-title .ti {
+  width: 7px; height: 7px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  flex-shrink: 0;
+}
+/* Texto "— opcional" dentro do título */
+.optional-label {
+  color: var(--text2);
+  font-size: 0.75rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+}
+
+/* ── Inputs / Selects / Textareas (sobrescrita dark Bootstrap) ── */
+.form-label {
+  font-size: 0.72rem;
+  color: var(--text2);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+  font-family: 'Rajdhani', sans-serif;
+}
+.form-control,
+.form-select {
+  background: var(--bg3) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 6px !important;
+  color: var(--text) !important;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--gold) !important;
+  box-shadow: 0 0 0 3px rgba(201,168,76,0.12) !important;
+  outline: none;
+}
+.form-control::placeholder { color: var(--text2); }
+.form-select option         { background: var(--bg3); color: var(--text); }
+textarea.form-control       { resize: vertical; min-height: 90px; }
+
+/* ── Cards de perfil (Guerreiro / Especialista / Místico) ── */
+.profile-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; }
+.profile-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem 0.75rem;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+  color: var(--text);
+  user-select: none;
+}
+.profile-card:hover           { border-color: var(--gold); }
+.profile-card.active          { border-color: var(--gold); background: rgba(201,168,76,0.07); color: var(--gold2); box-shadow: inset 0 0 20px rgba(201,168,76,0.07); }
+/* Ícone do perfil — usa Bootstrap Icons */
+.profile-card .p-icon         { font-size: 1.8rem; margin-bottom: 0.4rem; color: var(--text2); transition: color 0.2s; }
+.profile-card:hover .p-icon   { color: var(--gold); }
+.profile-card.active .p-icon  { color: var(--gold2); }
+.profile-card .p-name         { font-family: 'Cinzel', serif; font-size: 0.88rem; letter-spacing: 0.04em; }
+
+/* ── Pills de distribuição de atributos ──────────────────── */
+.dist-pill {
+  padding: 0.3rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--bg3);
+  color: var(--text2);
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.dist-pill:hover  { border-color: var(--gold); color: var(--gold); }
+.dist-pill.active { border-color: var(--gold); background: rgba(201,168,76,0.1); color: var(--gold2); }
+
+/* ── Dropzone de avatar ──────────────────────────────────── */
+.avatar-dropzone {
+  border: 2px dashed var(--border2);
+  border-radius: 8px;
+  background: var(--bg3);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.avatar-dropzone:hover,
+.avatar-dropzone.dragover       { border-color: var(--gold); background: rgba(201,168,76,0.04); }
+.dz-icon                        { font-size: 2rem; color: var(--border2); transition: color 0.2s; }
+.avatar-dropzone:hover .dz-icon,
+.avatar-dropzone.dragover .dz-icon { color: var(--gold); }
+.dz-text                        { font-size: 0.82rem; color: var(--text2); line-height: 1.6; }
+.dz-link                        { color: var(--gold); text-decoration: underline; cursor: pointer; }
+.dz-hint                        { font-size: 0.72rem; color: var(--text2); }
+
+/* Input de arquivo oculto (ativado por clique na dropzone) */
+#avatarFileInput { display: none; }
+
+/* Preview da imagem depois de carregada */
+.avatar-preview-wrap            { position: relative; display: inline-block; }
+.avatar-preview-wrap img        { width: 90px; height: 90px; object-fit: cover; border-radius: 6px; border: 2px solid var(--gold); }
+.avatar-clear-btn {
+  position: absolute; top: -7px; right: -7px;
+  width: 20px; height: 20px;
+  background: var(--red); border: none; border-radius: 50%;
+  color: #fff; font-size: 0.65rem;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+/* ── Botão principal de geração ──────────────────────────── */
+.btn-generate {
+  width: 100%;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, #7a5c10, #c9a84c, #7a5c10);
+  background-size: 200% 100%;
+  border: none; border-radius: 7px;
+  color: #09090e;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.btn-generate:hover:not(:disabled) { background-position: right; box-shadow: 0 4px 24px rgba(201,168,76,0.25); }
+.btn-generate:disabled             { opacity: 0.45; cursor: not-allowed; }
+/* Efeito de brilho no hover */
+.btn-generate::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
+  transform: translateX(-100%); transition: transform 0.5s;
+}
+.btn-generate:hover:not(:disabled)::after { transform: translateX(100%); }
+
+/* ── Alerta de erro ──────────────────────────────────────── */
+.rpg-alert {
+  padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.88rem;
+  background: rgba(192,57,43,0.12); border: 1px solid var(--red);
+  color: var(--red2); display: none;
+}
+
+/* ── Tela de carregamento ────────────────────────────────── */
+.loading-screen {
+  display: none; text-align: center; padding: 4rem 2rem;
+  color: var(--gold);
+  font-family: 'Cinzel', serif; letter-spacing: 0.18em; font-size: 0.9rem;
+}
+/* Spinner circular animado */
+.loading-spinner {
+  width: 48px; height: 48px;
+  border: 3px solid var(--border2);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin: 0 auto 1.25rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* Texto "..." animado */
+.loading-dots::after  { content: ''; animation: dots 1.5s steps(4,end) infinite; }
+@keyframes dots { 0%,20%{content:'.'} 40%{content:'..'} 60%{content:'...'} 80%,100%{content:''} }
+.loading-sub { font-size: 0.8rem; color: var(--text2); margin-top: 0.5rem; letter-spacing: 0.08em; }
+
+/* ── Barra de exportação ─────────────────────────────────── */
+.export-bar    { display: flex; gap: 0.65rem; justify-content: flex-end; margin-top: 1.25rem; flex-wrap: wrap; }
+.btn-export {
+  padding: 0.5rem 1.15rem;
+  border: 1px solid var(--border2); border-radius: 6px;
+  background: var(--bg3); color: var(--text);
+  font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 0.09em;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.btn-export:hover          { border-color: var(--gold); color: var(--gold); }
+.btn-export.primary        { background: rgba(201,168,76,0.09); border-color: var(--gold); color: var(--gold2); }
+
+/* ── Responsivo ──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .profile-grid { grid-template-columns: 1fr; }
+}

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Codex Arcanum — Gerador de Fichas RPG</title>
+
+  <!-- ── Google Fonts ── -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ── Bootstrap 5.3 CSS ── -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- ── Bootstrap Icons ── -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+
+  <!-- ── Projeto CSS (separado em dois arquivos de responsabilidade) ── -->
+  <link rel="stylesheet" href="css/form.css" />    <!-- Estilo do formulário de entrada -->
+  <link rel="stylesheet" href="css/sheet.css" />   <!-- Estilo da ficha final gerada   -->
+
+  <!-- ── Libs externas para export (carregadas antes do body) ── -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ── Fundo decorativo (padrão geométrico + gradientes de cor) ── -->
+  <div class="bg-deco"></div>
+
+  <div class="app-wrap">
+    <div class="container" style="max-width:980px; padding-top:1.5rem; padding-bottom:3rem;">
+
+      <!-- ════════════════════════════════
+           CABEÇALHO DO SITE
+      ════════════════════════════════ -->
+      <header class="site-header">
+        <div class="logo-ornament">
+          <div class="logo-line"></div>
+          <div class="logo-diamond"></div>
+          <div class="logo-line"></div>
+        </div>
+        <h1 class="site-title">CODEX ARCANUM</h1>
+        <p class="site-sub">Gerador Automático de Fichas de Personagem RPG</p>
+      </header>
+
+      <!-- ── Caixa de alerta de erro (oculta por padrão) ── -->
+      <div class="rpg-alert mb-3" id="errorMsg"></div>
+
+      <!-- ════════════════════════════════
+           SEÇÃO DO FORMULÁRIO DE ENTRADA
+      ════════════════════════════════ -->
+      <div id="form-section">
+
+        <!-- Parâmetros Principais: Nível, NA, Nome -->
+        <div class="rpg-card">
+          <div class="rpg-card-title"><span class="ti"></span>Parâmetros Principais</div>
+          <div class="row g-3">
+            <div class="col-6 col-md-3">
+              <label class="form-label">Nível</label>
+              <select class="form-select" id="nivel">
+                <option value="5">Nível 5</option>
+                <option value="10">Nível 10</option>
+                <option value="15">Nível 15</option>
+                <option value="20">Nível 20</option>
+                <option value="25">Nível 25</option>
+                <option value="30">Nível 30</option>
+              </select>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">Nível de Ameaça (NA)</label>
+              <select class="form-select" id="na">
+                <option value="0.25">0.25</option>
+                <option value="0.5">0.5</option>
+                <option value="1" selected>1</option>
+                <option value="1.5">1.5</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="6">6</option>
+                <option value="8">8</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">Nome do Personagem</label>
+              <input type="text" class="form-control" id="nome" placeholder="Ex: Kael'theron, Morgath o Sombrio..." />
+            </div>
+          </div>
+        </div>
+
+        <!-- Upload de Avatar: arrastar / clicar / colar -->
+        <div class="rpg-card">
+          <div class="rpg-card-title">
+            <span class="ti"></span>Avatar / Imagem do Personagem
+            <span class="optional-label">&nbsp;— opcional</span>
+          </div>
+          <div
+            class="avatar-dropzone"
+            id="avatarDropzone"
+            ondragover="dzDragOver(event)"
+            ondragleave="dzDragLeave(event)"
+            ondrop="dzDrop(event)"
+            onclick="dzClick(event)"
+            tabindex="0"
+          >
+            <!-- Input de arquivo oculto -->
+            <input type="file" id="avatarFileInput" accept="image/*" onchange="dzFileChange(event)" />
+
+            <!-- Estado vazio: instruções -->
+            <div id="dzEmpty" style="display:flex;flex-direction:column;align-items:center;gap:0.5rem">
+              <div class="dz-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+              <div class="dz-text">
+                <strong style="color:var(--text3)">Arraste uma imagem aqui</strong><br />
+                ou <span class="dz-link">clique para selecionar arquivo</span><br />
+                <span style="font-size:0.73rem;color:var(--text2)">Suporta colar (Ctrl+V) imagem copiada</span>
+              </div>
+              <div style="display:flex;gap:1.5rem;margin-top:0.25rem">
+                <span class="dz-hint"><i class="bi bi-arrow-down-up me-1"></i>Arrastar</span>
+                <span class="dz-hint"><i class="bi bi-folder2-open me-1"></i>Arquivos</span>
+                <span class="dz-hint"><i class="bi bi-clipboard me-1"></i>Colar</span>
+              </div>
+            </div>
+
+            <!-- Estado com preview da imagem carregada -->
+            <div id="dzPreview" style="display:none;flex-direction:column;align-items:center;gap:0.5rem">
+              <div class="avatar-preview-wrap">
+                <img id="avatarPreviewImg" src="" alt="Avatar" />
+                <button class="avatar-clear-btn" id="dzClearBtn" title="Remover imagem">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+              <div style="font-size:0.75rem;color:var(--text2)">
+                <i class="bi bi-check-circle me-1" style="color:var(--green)"></i>Imagem carregada · clique para trocar
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Perfil Base: Guerreiro / Especialista / Místico -->
+        <div class="rpg-card">
+          <div class="rpg-card-title"><span class="ti"></span>Perfil Base de Estatísticas</div>
+          <div class="profile-grid">
+            <div class="profile-card" onclick="setProfile('guerreiro')" id="btn-guerreiro">
+              <div class="p-icon"><i class="bi bi-shield-shaded"></i></div>
+              <div class="p-name">Guerreiro</div>
+            </div>
+            <div class="profile-card active" onclick="setProfile('especialista')" id="btn-especialista">
+              <div class="p-icon"><i class="bi bi-crosshair2"></i></div>
+              <div class="p-name">Especialista</div>
+            </div>
+            <div class="profile-card" onclick="setProfile('mistico')" id="btn-mistico">
+              <div class="p-icon"><i class="bi bi-stars"></i></div>
+              <div class="p-name">Místico</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Distribuição de Atributos -->
+        <div class="rpg-card">
+          <div class="rpg-card-title"><span class="ti"></span>Distribuição de Atributos</div>
+          <label class="form-label d-block mb-2">Estilo de distribuição</label>
+          <div class="d-flex gap-2 flex-wrap mb-2">
+            <button class="dist-pill active" onclick="setDist('balanceada')" id="dist-balanceada">Balanceada</button>
+            <button class="dist-pill" onclick="setDist('minmax')" id="dist-minmax">Min-Max</button>
+            <button class="dist-pill" onclick="setDist('extrema')" id="dist-extrema">Extrema</button>
+          </div>
+          <small class="text-muted" style="font-size:0.73rem">* Extrema disponível apenas para Nível 15+</small>
+        </div>
+
+        <!-- Descrição Temática para a IA -->
+        <div class="rpg-card">
+          <div class="rpg-card-title">
+            <span class="ti"></span>Descrição do Personagem
+            <span class="optional-label">&nbsp;— guia a IA na criação das habilidades</span>
+          </div>
+          <label class="form-label">Descreva o personagem, sua origem, estilo de combate ou tema</label>
+          <textarea
+            class="form-control"
+            id="habilDesc"
+            placeholder="Ex: Uma assassina das sombras que usa veneno e ilusões. Prefere ataques furtivos e nunca confronta o inimigo diretamente..."
+          ></textarea>
+        </div>
+
+        <!-- Botão principal de geração -->
+        <button class="btn-generate" onclick="generateSheet()" id="genBtn">
+          <i class="bi bi-lightning-charge-fill me-2"></i>Gerar Ficha
+        </button>
+      </div>
+      <!-- /form-section -->
+
+      <!-- ════════════════════════════════
+           TELA DE CARREGAMENTO
+      ════════════════════════════════ -->
+      <div class="loading-screen" id="loadingArea">
+        <div class="loading-spinner"></div>
+        <div>Forjando a ficha<span class="loading-dots"></span></div>
+        <div class="loading-sub">A IA está criando habilidades únicas para o personagem...</div>
+      </div>
+
+      <!-- ════════════════════════════════
+           SAÍDA: FICHA GERADA
+      ════════════════════════════════ -->
+      <div id="sheet-container">
+        <!-- A ficha é injetada aqui via JavaScript (renderSheet em js/sheet.js) -->
+        <div id="sheet-output"></div>
+
+        <!-- Barra de ações pós-geração -->
+        <div class="export-bar">
+          <button class="btn-export" onclick="resetForm()">
+            <i class="bi bi-arrow-counterclockwise"></i> Nova Ficha
+          </button>
+          <button class="btn-export" onclick="exportImage()">
+            <i class="bi bi-image"></i> Exportar Imagem
+          </button>
+          <button class="btn-export primary" onclick="exportPDF()">
+            <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /app-wrap -->
+
+  <!-- ── Bootstrap JS ── -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- ── Módulos do projeto (ordem importa) ── -->
+  <script src="js/data.js"></script>      <!-- Tabelas de dados: perfis, NA_MODS, ATTR_DIST -->
+  <script src="js/api.js"></script>       <!-- Chamada à API de IA (OpenRouter / Anthropic)  -->
+  <script src="js/sheet.js"></script>     <!-- Renderização da ficha e edição inline          -->
+  <script src="js/export.js"></script>    <!-- Exportação para PNG e PDF                      -->
+  <script src="js/main.js"></script>      <!-- Controlador principal: form, dropzone, geração -->
+</body>
+</html>
