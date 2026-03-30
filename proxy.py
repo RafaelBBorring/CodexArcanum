@@ -68,6 +68,7 @@ def static_files(path):
 # O proxy monta o body completo e adiciona os headers de autenticação.
 @app.route('/generate', methods=['POST'])
 def generate():
+    print("API_KEY DEBUG:", API_KEY)
     data = request.json
 
     # Valida o body recebido
