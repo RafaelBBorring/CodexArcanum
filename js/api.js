@@ -38,7 +38,7 @@ const APP_NAME = 'Character-Sheet';
 // Se estiver em localhost, usa o proxy Flask para evitar CORS.
 // Caso contrário, chama a OpenRouter diretamente.
 function getApiEndpoint() {
-  return 'https://CodexArcanum.up.railway.app/generate';
+  return 'https://codexarcanum-production.up.railway.app/generate';
 }
 
 // ── Função principal de chamada à IA ─────────────────────────
