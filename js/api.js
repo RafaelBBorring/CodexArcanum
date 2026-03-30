@@ -116,7 +116,7 @@ Retorne SOMENTE este JSON (sem markdown, sem explicação):
 
   // ── Decide endpoint e headers conforme o ambiente ──────────
   const endpoint = getApiEndpoint();
-  const isProxy  = endpoint === '/generate';
+  const isProxy = true;
 
   // Headers:
   //   Proxy → sem Authorization (o proxy.py adiciona com a chave)
