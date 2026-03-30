@@ -44,7 +44,10 @@ CORS(app)
 # ── Configuração da API ──────────────────────────────────────
 # ATENÇÃO: AI_MODEL deve ser igual ao AI_MODEL em js/api.js
 API_URL  = "https://openrouter.ai/api/v1/chat/completions"
-API_KEY  = "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"
+
+import os
+API_KEY = os.getenv("OPENROUTE_API_KEY")
+
 AI_MODEL = "meta-llama/Llama-3.3-70B-Instruct"   # ← modelo confirmado como gratuito
 
 # ── Rota raiz: serve o index.html ────────────────────────────
@@ -120,12 +123,19 @@ def generate():
 
 
 if __name__ == '__main__':
+    import os
+
     print("=" * 52)
     print("  Codex Arcanum — Proxy Server")
     print("  Acesse: http://localhost:5000")
     print(f"  Modelo: {AI_MODEL}")
     print("=" * 52)
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+   # app.run(host='0.0.0.0', port=5000, debug=True) #
+
+
 
 
 # ============================================================
