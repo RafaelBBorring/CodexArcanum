@@ -27,8 +27,6 @@
 
 // ── Configuração ─────────────────────────────────────────────
 
-// Chave da OpenRouter — só é usada em chamada direta (sem proxy)
-const API_KEY  = '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';
 
 // Modelo gratuito confirmado — deve coincidir com o AI_MODEL no proxy.py
 const AI_MODEL = 'meta-llama/Llama-3.3-70B-Instruct';
@@ -40,13 +38,7 @@ const APP_NAME = 'Character-Sheet';
 // Se estiver em localhost, usa o proxy Flask para evitar CORS.
 // Caso contrário, chama a OpenRouter diretamente.
 function getApiEndpoint() {
-  const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-  if (isLocalhost) {
-    // Proxy local — rota relativa, mesmo host e porta que o Flask serve
-    return '/generate';
-  }
-  // Produção — chamada direta à OpenRouter
-  return 'https://openrouter.ai/api/v1/chat/completions';
+  return 'https://CodexArcanum.up.railway.app/generate';
 }
 
 // ── Função principal de chamada à IA ─────────────────────────
@@ -130,10 +122,6 @@ Retorne SOMENTE este JSON (sem markdown, sem explicação):
   //   Proxy → sem Authorization (o proxy.py adiciona com a chave)
   //   Direto → Authorization Bearer necessário
   const headers = { 'Content-Type': 'application/json' };
-  if (!isProxy) {
-    headers['Authorization'] = `Bearer ${API_KEY}`;
-    headers['X-Title']       = APP_NAME;
-  }
 
   // Body:
   //   Proxy → envia apenas { messages } — o proxy.py monta o resto
